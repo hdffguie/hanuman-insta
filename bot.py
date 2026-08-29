@@ -3,7 +3,7 @@ import json
 import random
 import time
 from instagrapi import Client
-from moviepy.editor import ImageClip, VideoFileClip
+from moviepy.editor import ImageClip, AudioFileClip
 
 # --- Random Delay (25-40 min effect) ---
 random_wait = random.randint(0, 600)
@@ -30,7 +30,7 @@ cl.login_by_sessionid(SESSION_ID)
 
 # List Files
 photos = sorted([f for f in os.listdir(PHOTO_FOLDER) if f.endswith(('.jpg', '.jpeg', '.png'))])
-songs = sorted([f for f in os.listdir(MUSIC_FOLDER) if f.lower().endswith(('.mp4', '.mov', '.mkv', '.avi'))])
+songs = sorted([f for f in os.listdir(MUSIC_FOLDER) if f.lower().endswith(('.mp3', '.wav', '.m4a'))])
 
 state = load_state()
 p_idx = state["photo_index"] % len(photos)
@@ -43,22 +43,25 @@ current_song = os.path.join(MUSIC_FOLDER, songs[s_idx])
 print(f"Using Photo: {photos[p_idx]}, Song: {songs[s_idx]} from {start_time}s")
 
 try:
-    # Load Music
-    song_clip = VideoFileClip(current_song)
+    # --- बदलाव: VideoFileClip की जगह AudioFileClip किया गया है ---
+    audio_clip = AudioFileClip(current_song)
     
     # Agar gaana khatam hone wala hai, toh agla gaana uthao
-    if start_time + 6 > song_clip.duration:
+    if start_time + 6 > audio_clip.duration:
         print("Song ending, moving to next song...")
         s_idx = (s_idx + 1) % len(songs)
         start_time = 8
-        song_clip.close()
+        audio_clip.close()
         current_song = os.path.join(MUSIC_FOLDER, songs[s_idx])
-        song_clip = VideoFileClip(current_song)
+        audio_clip = AudioFileClip(current_song)
 
     # Cut Audio and Create Video
-    audio_clip = song_clip.audio.subclip(start_time, start_time + 6)
+    extracted_audio = audio_clip.subclip(start_time, start_time + 6)
     photo_clip = ImageClip(current_photo).set_duration(6).set_fps(24)
-    photo_clip.audio = audio_clip
+    
+    # --- बदलाव: Reel का स्टैंडर्ड साइज (1080, 1920) सेट किया गया है ---
+    photo_clip = photo_clip.resize((1080, 1920))
+    photo_clip.audio = extracted_audio
     
     # Reel Save
     output = "final_reel.mp4"
@@ -76,7 +79,7 @@ try:
     save_state(state)
 
     # Clean up
-    song_clip.close()
+    audio_clip.close()
     photo_clip.close()
     os.remove(output)
 
