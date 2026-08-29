@@ -30,7 +30,7 @@ cl.login_by_sessionid(SESSION_ID)
 
 # List Files
 photos = sorted([f for f in os.listdir(PHOTO_FOLDER) if f.endswith(('.jpg', '.jpeg', '.png'))])
-songs = sorted([f for f in os.listdir(MUSIC_FOLDER) if f.endswith(('.mp4', '.mov'))])
+songs = sorted([f for f in os.listdir(MUSIC_FOLDER) if f.lower().endswith(('.mp4', '.mov', '.mkv', '.avi'))])
 
 state = load_state()
 p_idx = state["photo_index"] % len(photos)
