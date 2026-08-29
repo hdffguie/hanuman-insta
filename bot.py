@@ -59,7 +59,7 @@ try:
     extracted_audio = audio_clip.subclip(start_time, start_time + 6)
     photo_clip = ImageClip(current_photo).set_duration(6).set_fps(24)
     
-    # --- बदलाव: Reel का स्टैंडर्ड साइज (1080, 1920) सेट किया गया है ---
+    # --- बदलाव: Reel का STANDARD साइज (1080, 1920) सेट किया गया है ---
     photo_clip = photo_clip.resize((1080, 1920))
     photo_clip.audio = extracted_audio
     
@@ -67,8 +67,34 @@ try:
     output = "final_reel.mp4"
     photo_clip.write_videofile(output, codec="libx264", audio_codec="aac", fps=24, logger=None)
 
-    # Upload
-    caption = "Viral Sound! 🎵 #music #reels #trending #explore"
+    # --- बदलाव: हर बार नया और यूनिक कैप्शन बनाने का लॉजिक (त्रुटिहीन) ---
+    raw_title = songs[s_idx].replace('.mp3', '').replace('.wav', '').replace('.m4a', '')
+    song_title = raw_title.split(" 128")[0].split(" 320")[0].strip()
+    
+    mood_lines = [
+        f"This song hits different... 🎧✨ | Listening to: {song_title}",
+        f"Current vibe status: ON repeat! ❤️🎵 | {song_title}",
+        f"Feelin' this melody today. ✨🎶 | Song: {song_title}",
+        f"Let the music heal your soul. 🎧💫 | Now Playing: {song_title}",
+        f"Just close your eyes and feel the music. 🌟 | {song_title}",
+        f"Can't get this track out of my head! 🎶🔥 | {song_title}",
+        f"Music is the shorthand of emotion. ❤️🎧 | {song_title}",
+        f"A perfect song for a perfect mood. ✨🎵 | Now Playing: {song_title}",
+        f"Lost in the rhythm of this sound. 🌌🎶 | {song_title}",
+        f"Some songs just touch the heart directly. 🎧💖 | {song_title}"
+    ]
+    
+    hashtag_sets = [
+        "\n\n#music #reels #trending #explore #viral #foryou",
+        "\n\n#trendingreels #instamusic #vibes #explorepage #fyp",
+        "\n\n#reelsindia #viralvideos #lovesongs #bgm #instagramreels",
+        "\n\n#songstatus #feelthemusic #reelsviral #trendingnow #musiclover",
+        "\n\n#statusvideo #hindisongs #explore #foryoupage #soundon"
+    ]
+    
+    caption = random.choice(mood_lines) + random.choice(hashtag_sets)
+
+    # Upload (अब नए कैप्शन के साथ अपलोड होगा)
     cl.clip_upload(output, caption=caption)
     print("✅ Upload Successful!")
 
